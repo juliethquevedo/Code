@@ -11,9 +11,9 @@ const express = require('express');
 const router = express.Router();
 
 //Funciones controladas con la logica real de cada endpoint
-const { login, register } = require('../controllers/auth.controllers');
+const { login, perfil } = require('../controllers/auth.controller');
 //middleware que protege rutas exigiendo un token jwt valido
-const verifyToken = require('../middlewares/verifyToken');
+const verifyToken = require('../middlewares/verificarToken');
 //post /api/auth/login = iniciar sesion (ruta publica)
 router.post('/login', login);
 
@@ -22,3 +22,5 @@ router.post('/login', login);
 router.get('/perfil', verifyToken,perfil) ;
 
 module.exports = router;
+
+
