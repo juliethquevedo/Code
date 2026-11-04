@@ -36,7 +36,7 @@ function verificarToken(req, res, next) {
     return res.status(401).json({mensaje: 'formato de token invalido '});
   }
 
-  //todo lo que pueda fallar (toke invalido expirado alterado) se 
+  //Todo lo que pueda fallar (toke invalido expirado alterado) se 
   //maneja dentro de este try/catch
   try{
     //jwt.verify valida la firma del tokrn con el mismo secreto que se uso para crearlo (JWT_SECRET)
