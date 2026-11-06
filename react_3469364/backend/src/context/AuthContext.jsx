@@ -36,7 +36,56 @@ useEffect(() => {
         // hacer login
         if (usuarioGuardado && tokenGuardado){
         setUsuario(JSON.parse(usuarioGuardado));
-        }
-})
+      }
+  setCargando(false);
+}, []);
 
+//funcion de login: la llama loginPage cuando el usuario envia el formulario
+async function login(email, password) {
+  //puede lanzar un error (por ejemplo credenciales invalidas)
+  //dejamos que loginPage lo capture con try/catch para mostrar el mensaje
+  const { token, usuario: usuarioRecibido } = await iniciarSesion(email, password);
+  //Guardamos la sesion en el localStorage para que sobreviva a un F5
+  localStorage.setItem('token', token);
+    //actualizamos el estado en memoria para la UI reaccione al instante
+  setUsuario(usuarioRecibido);
+  localStorage.setItem('usuario',JSON.stringify(usuarioRecibido));
+//funcion de logout borra la sesion tanto del localstorage como el estado
+  function logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
+    setUsuario(null);
 }
+//valor que va a estar disponible para cualquier componente que use aseAuth()
+const value ={
+    usuario,
+    cargando,
+    estaAutenticado:!!usuario,//convierte usuario(objeto o null) en true o flase
+    login,
+    logout,
+};
+//todo lo que esta dentro del <Authprovider>...</Authprovider>osea
+//children, toda la app puede leer value con useAuth()
+ return <AuthContext.Provider value=
+    {value}></AuthContext.Provider>;
+}
+/**
+ * Hook personalizado para consumir el
+ * contexto mas facil:
+ * en vez de useContext(AuthContext) lo
+ * componentes hacen useAuth().
+ */
+export function useAuth() {
+  //lee el valor actual del contexto
+  //(Usuario, cargando, login, logout)
+  const contexto = useContext
+    (AuthContext);
+    //si alguien usa useAuth()fuera de <AuthProvider> contexto seria null:
+    //avisamos con un error claro en vez de fallar mas adelante en forma  confusa
+    if (!contexto) {
+    throw new Error('useAuth debe usarse dentro de un <authProvider>');
+  }
+ return contexto;
+}
+}
+
