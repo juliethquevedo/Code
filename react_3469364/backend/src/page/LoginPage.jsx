@@ -32,10 +32,23 @@ const[enviado, setEnviado] = useState (false);
 async function manejarEnvio(evento){
     evento.preventDefault(); //evita que e navegador recargue la pagina
     setError('');//limpia cualquier error de un intento anterior
-    setEnviando(true);//
+    setEnviando(true);//deshabilita el boton mientras esperamos la respuesta
+    try{
+        //login () esta definido en Autocontext: llama al backend
+        //Guarda el token/usuario y actualiza el estado global 
+         await login(email, password);
+    // si no lanzo error , las credenciales fueron correctos
+    navigate('/dashboard', { replace: true });
+  } catch (err) {
+    //si el backend respondio un mensaje error (401, 403 ...)
+    //axios lo deja disponible en err.response.data.mensaje
+    const mensajeBackend = err?.response?.data?.mensaje;
+    setError(mensajeBackend || 'no se pudo conectar con el servidor. Verifica que el backend este corriendo');
+  } finally{
+    //finally se ejcuta siempre (haya exito o error) reactivamos el boton
+    setEnviando(false);
+  }
+}
 }
 
 
-
-
-}
